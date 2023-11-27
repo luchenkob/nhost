@@ -1,0 +1,197 @@
+namespace: nhost
+
+postgres:
+  defines: runnable
+  inherits: postgresql/db
+  metadata:
+    name: postgres
+    description: Database service
+    icon: https://www.postgresql.org/media/img/about/press/elephant.png
+  variables:
+    db_name:
+      type: string
+      value: monk
+      description: ''
+    db_pass:
+      type: string
+      value: adminpassword
+      description: ''
+    db_user:
+      type: string
+      value: monk
+      description: ''
+
+graphql-engine:
+  defines: runnable
+  inherits: hasura/hasura
+  metadata:
+    name: graphql-engine
+    description: GraphQL API service
+    icon: https://hasura.io/brand-assets/hasura-logo-primary-dark.svg
+  variables:
+    db:
+      type: string
+      value: postgres://monk:adminpassword@postgres:5432/monk
+      description: ''
+    db_hasura:
+      type: string
+      value: postgres://monk:adminpassword@postgres:5432/monk
+      description: ''
+    db_hasura_host:
+      type: string
+      value: postgres
+      description: ''
+    db_host:
+      type: string
+      value: postgres
+      description: ''
+    hasura_admin_secret:
+      type: string
+      value: monk
+      description: ''
+    hasura_graphql_cnsl:
+      type: string
+      value: 'true'
+      description: ''
+    hasura_graphql_dev:
+      type: string
+      value: 'true'
+      description: ''
+    hasura_graphql_log_types:
+      type: string
+      value: startup, http-log, webhook-log, websocket-log, query-log
+      description: ''
+    volume_local:
+      type: string
+      value: null
+      description: ''
+
+auth:
+  defines: runnable
+  inherits: keycloak/keycloak
+  metadata:
+    name: auth
+    description: Authentication service
+    icon: https://www.keycloak.org/resources/images/keycloak_logo_200px.svg
+  variables:
+    hostname:
+      type: string
+      value: null
+      description: ''
+    ip-address:
+      type: string
+      value: ip-address-public
+      description: ''
+    monk_db_addr:
+      type: string
+      value: jdbc:postgresql://postgres/keycloak
+      description: ''
+    monk_db_name:
+      type: string
+      value: keycloak
+      description: ''
+    monk_db_pass:
+      type: string
+      value: monk
+      description: ''
+    monk_db_user:
+      type: string
+      value: monk
+      description: ''
+    monk_db_vendor:
+      type: string
+      value: postgres
+      description: ''
+    monk_kc_pass:
+      type: string
+      value: monk
+      description: ''
+    monk_kc_user:
+      type: string
+      value: monk
+      description: ''
+
+storage:
+  defines: runnable
+  inherits: minio/minio
+  metadata:
+    name: storage
+    description: File storage service
+    icon: https://min.io/resources/img/logo.svg
+  variables:
+    console_port:
+      type: string
+      value: '9001'
+      description: ''
+    minio_admin_password:
+      type: string
+      value: administrator
+      description: ''
+    minio_admin_username:
+      type: string
+      value: administrator
+      description: ''
+
+minio:
+  defines: runnable
+  inherits: minio/minio
+  metadata:
+    name: minio
+    description: Object storage service
+    icon: https://min.io/resources/img/logo.svg
+  variables:
+    console_port:
+      type: string
+      value: '9001'
+      description: ''
+    minio_admin_password:
+      type: string
+      value: administrator
+      description: ''
+    minio_admin_username:
+      type: string
+      value: administrator
+      description: ''
+
+dashboard:
+  defines: runnable
+  inherits: monitoring/grafana
+  metadata:
+    name: dashboard
+    description: Nhost dashboard service
+    icon: https://grafana.com/static/assets/internal/grafana_logo-web-white-text.svg
+  variables:
+    admin-password:
+      type: string
+      value: admin
+      description: ''
+    admin-user:
+      type: string
+      value: admin
+      description: ''
+    anonymous:
+      type: string
+      value: 'true'
+      description: ''
+    anonymous_role:
+      type: string
+      value: Viewer
+      description: ''
+    install_plugins:
+      type: string
+      value: grafana-clock-panel,grafana-simple-json-datasource
+      description: ''
+    prometheusHost:
+      type: string
+      value: null
+      description: ''
+
+stack:
+  defines: group
+  members:
+    - nhost/postgres
+    - nhost/graphql-engine
+    - nhost/auth
+    - nhost/storage
+    - nhost/minio
+    - nhost/dashboard
